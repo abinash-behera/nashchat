@@ -1,0 +1,76 @@
+@CHARSET "UTF-8";
+
+body {
+	font-family: "Courier New", Courier, monospace;
+}
+
+.vessel {
+}
+
+.nash-message-right {
+	display: inline-flex;
+	color: white;
+	background: #204a87;
+	min-width: 200px;
+	min-height: 30px;
+	max-width: 400px;
+	/*first value applies to top-left, second value applies to top-right, third value applies to bottom-right, and fourth value applies to bottom-left corner */
+	border-radius: 10px 0px 0px 10px;
+	/*border-radius: 20px;  */
+	/*border: thin solid red; */
+	padding: 5px;
+	text-align: left;
+	/* this aligns the contents of the div to the left  */
+}
+
+.nash-message-left {
+	display: inline-flex;
+	color: #204a87;
+	background: white;
+	min-width: 200px;
+	min-height: 30px;
+	max-width: 400px;
+	/*first value applies to top-left, second value applies to top-right, third value applies to bottom-right, and fourth value applies to bottom-left corner */
+	border-radius: 0px 10px 10px 0px;
+	/*border-radius: 20px;  */
+	border: thin solid #204a87;
+	padding: 5px;
+}
+
+.li-right {
+	text-align: right; /* this aligns the div to the right  */
+	right: 0;
+}
+
+.li-left {
+	/*text-align: left;*/
+	left: 0;
+}
+
+.li-people {
+}
+
+.online {
+	color: white;
+	background-color: #204a87;
+	min-height: 2000px; /*TODO hacky fix*/
+}
+
+.send {
+	border-color: #204a87;
+}
+
+.inputMessage {
+	border-color: #204a87;
+}
+
+.name {
+	display: block;
+	color: white;
+}
+
+.name:focus, .name:hover {
+	color: white;
+	text-decoration: underline;
+	cursor: pointer;
+}

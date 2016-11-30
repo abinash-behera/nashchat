@@ -1,0 +1,36 @@
+{
+	  "name": "NashChat",
+	  "version": "1.0.0",
+	  "description": "OpenShift Nodejs Application",
+	  "keywords": [
+	    "OpenShift",
+	    "Node.js",
+	    "application",
+	    "openshift"
+	  ],
+	  "author": {
+	    "name": "Abinash Behera",
+	    "email": "abin199023@gmail.com",
+	    "url": "http://www.abinashbehera.tk"
+	  },
+	  "homepage": "http://www.abinashbehera.tk",
+	  "repository": {
+	    "type": "git",
+	    "url": "https://github.com/openshift/origin-server"
+	  },
+
+	  "engines": {
+	    "node": ">= 0.6.0",
+	    "npm": ">= 1.0.0"
+	  },
+
+	  "dependencies": {
+			"express": "^4.10.2",
+	    "socket.io": "^1.4.6"
+	  },
+	  "devDependencies": {},
+	  "bundleDependencies": [],
+
+	  "private": true,
+	  "main": "server.js"
+}

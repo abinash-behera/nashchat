@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Code copied from the socket-chat-example-->
+  <title>NashChat</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="nash_landing.css">
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <style>
+  /* body { font: 13px Helvetica, Arial; } */
+  form { position: fixed; bottom: 0; }
+  #messages { list-style-type: none; margin: 0; padding: 0; }
+  #messages li { padding: 5px 10px; }
+  /* #messages li:nth-child(odd) { background: #eee; } */
+  </style>
+</head>
+<body>
+  <!-- Trigger the modal with a button -->
+  <!-- <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#landingModal">Open Modal</button> -->
+
+  <!-- Modal -->
+  <div id="landingModal" class="modal fade" data-backdrop="static" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <!-- <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Enter Name</h4>
+      </div> -->
+      <div class="modal-body">
+        <label for="username">Enter Name:</label>
+        <div class="input-group">
+          <input id="username" class="form-control" autofocus type="text" name="username"id="username"  maxlength="15">
+          <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+          <span class="input-group-btn">
+            <button type="button" class="btn" data-dismiss="modal" onclick="closeLandingModal()">Enter</button>
+          </span>
+        </div>
+      </div>
+      <!-- <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div> -->
+  </div>
+</div>
+</div>
+
+<!-- TODO Add container class and all structure using the usual bootstrap way -->
+<!-- Using the bootstrap two column layout -->
+<!--TODO Why row?  -->
+<div class="container-fluid">
+  <div class="row vessel">
+    <!--TODO make this mobile friendly as well - refer bootstrap grid http://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_grid_ex5&stacked=h  -->
+    <div class="col-sm-3 online">
+      <div> Logged in as: <span id="loggedInName"></span> </div>
+      <div> Online </div>
+      <ul id="allPeople"></ul>
+    </div>
+    <div class="col-sm-9">
+      <ul id="messages"></ul>
+      <form action="" class="form-horizontal">
+        <div class="input-group">
+          <!-- TODO rename this element --> <!-- Autofocus does not work --> <!--TODO Security risks -->
+          <input id="inputMessage" autofocus class="form-control inputMessage" type="text" autocomplete="off"/>
+          <span class="input-group-btn">
+            <button class="btn send">Send</button>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+$(window).load(function(){
+  $('#landingModal').modal('show');
+});
+var username = '';
+//clear the people list
+$("#allPeople").empty();
+
+//var connectUserName = '';
+//boolean haveSentUserName = false; //TODO check for better approach
+function closeLandingModal(){
+  username = $('#username').val();
+  $('#loggedInName').text(username);
+  //TODO I hope no user is fast enough to type their name before socket creation but still check for null before emitting the below events.
+  //add the username in the clients list
+  socket.emit('username', username);
+
+  //fetch all online clients
+  socket.emit('give all clients');
+}
+
+//TODO how to deal with multiple clients with same usernames
+// TODO ensure that username is set
+// TODO stop closing of modal by clicking anywhere
+var socket = io(); // We are not specifying any URL when I call io(), since it defaults to trying to connect to the host that serves the page.
+socket.on('take all clients', function(allClients){
+  //console.log(allClients);
+  if(allClients){
+    //TODO This includes current username as well for now in online people's list
+    allClients.forEach(function(name){
+      if(name != username){
+        var li = $('<li class="li-people">');
+        $(li).html('<a class="name" onclick="chatWith(\'' +  name + '\')">' + name + '</a>');
+        $('#allPeople').append(li);
+      }
+    });
+  }else{
+    //TODO think something for this
+  }
+});
+
+//new client joined event
+socket.on('new client', function(name){
+  if(name){
+    var li = $('<li class="li-people">');
+    $(li).html('<a class="name" onclick="chatWith(\'' +  name + '\')">' + name + '</a>');
+    $('#allPeople').append(li);
+  }
+});
+
+//client left event
+socket.on('client left', function(name){
+  //TODO handle this
+});
+
+$('form').submit(function(){
+  // if(haveSentUserName){
+  //   socket.emit('set username', username);
+  //   haveSentUserName = false;
+  // }
+  var sendMsg = $('#inputMessage').val();
+  sendMsg = username + " : " + sendMsg;
+  socket.emit('chat message', sendMsg);
+  //creating the message div
+  var div = document.createElement("div");
+  $(div).addClass("nash-message-right");
+  //$(div).css("display", block");
+  $(div).text(sendMsg);
+  var li = $('<li class="li-right">');
+  li.append($(div));
+  $('#messages').append(li);
+  $('#inputMessage').val('');
+  return false;
+});
+
+//client side handling the emitted event by server
+socket.on('chat message', function(msg){
+  //msg = connectUserName + ":" + msg;
+  var div = document.createElement("div");
+  $(div).addClass("nash-message-left");
+  //$(div).css("display", block");
+  $(div).text(msg);
+  var li = $('<li class="li-left">');
+  li.append($(div));
+  $('#messages').append(li);
+});
+
+function chatWith (toUsername) {
+  socket.emit('hook', username, toUsername);
+}
+
+</script>
+</body>
+</html>
